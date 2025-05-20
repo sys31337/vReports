@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 ---@diagnostic disable: need-check-nil
 
 ---@param data ActiveReport
@@ -13,7 +15,14 @@ RegisterNetEvent("reportmenu:server:report", function(data)
     local reportId = tostring(rchar .. rint_num)
     local sourceName = GetPlayerName(source)
 
+    local Player = QBCore.Functions.GetPlayer(source)
+    local playerDiscord = QBCore.Functions.GetIdentifier(source, "discord")
+    local playerLicense = QBCore.Functions.GetIdentifier(source, "license")
     data.id = source
+    data.playerId = source .. " (" .. (Player.PlayerData.citizenid) .. ")" .. " - " .. Player.PlayerData.charinfo.firstname .. " " ..
+        Player.PlayerData.charinfo.lastname
+    data.playerDiscord = playerDiscord
+    data.playerLicense = playerLicense
     data.timedate = ("%s | %s"):format(os.date("%X"), os.date("%x"))
     data.reportId = reportId
     Debug(json.encode(data))

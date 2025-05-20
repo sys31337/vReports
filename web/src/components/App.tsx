@@ -85,9 +85,7 @@ export interface ScriptConfig {
 const App: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [playerData, setPlayerData] = useState<playerData>(initialPlayerData);
-    const [currentTab, setCurrentTab] = useState(
-        playerData.isStaff ? "reports" : "myreports"
-    );
+    const [currentTab, setCurrentTab] = useState(playerData.isStaff ? "reports" : "myreports");
     const [reportMenuVisible, setReportMenuVisible] = useState(isEnvBrowser());
     const [reportData, setReportData] = useState<reportData>(initialReportData);
     const [activeReports, setActiveReports] = useState<Report[]>([]);

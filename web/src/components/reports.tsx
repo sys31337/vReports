@@ -1,15 +1,16 @@
-import { Modal, ScrollArea } from "@mantine/core";
+import { Modal, ScrollArea, Menu, Text } from "@mantine/core";
 import React, { useState } from "react";
-import { FaCheck, FaPeoplePulling } from "react-icons/fa6";
+import { FaCheck, FaPeoplePulling, } from "react-icons/fa6";
 import { GiTeleport } from "react-icons/gi";
-
 import { debugData } from "@/utils/debugData";
 import { fetchNui } from "@/utils/fetchNui";
 import { IoIosSend } from "react-icons/io";
-import { MdOutlineSocialDistance } from "react-icons/md";
+import { MdOutlineCarRepair, MdOutlineSocialDistance } from "react-icons/md";
 import "./App.css";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLogout, TbMedicalCrossFilled, TbPackages, TbSettingsStar, TbUser } from "react-icons/tb";
+import { IoCutSharp } from "react-icons/io5";
 
 const types = ["Bug", "Question", "Gameplay"];
 
@@ -18,9 +19,8 @@ const getCurrentDateTime = () => {
     const hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();
 
-    const formattedDate = `${
-        currentDate.getMonth() + 1
-    }/${currentDate.getDate()}/${currentDate.getFullYear()}`;
+    const formattedDate = `${currentDate.getMonth() + 1
+        }/${currentDate.getDate()}/${currentDate.getFullYear()}`;
 
     const formattedTime = `${hours}:${minutes < 10 ? "0" : ""}${minutes}`;
 
@@ -54,6 +54,9 @@ export interface nearestPlayer {
 export interface Report {
     id: number | string;
     playerName: string;
+    playerId: string;
+    playerLicense: string;
+    playerDiscord: string;
     type: "Bug" | "Question" | "Gameplay" | "";
     description: string;
     timedate: string;
@@ -66,6 +69,9 @@ export interface Report {
 const initStateCurrReport: Report = {
     id: 0,
     playerName: "",
+    playerId: "",
+    playerLicense: "",
+    playerDiscord: "",
     type: "",
     description: "",
     timedate: "",
@@ -79,6 +85,20 @@ interface Props {
     myReports: boolean;
 }
 
+const adminActions = [
+    { id: 1, name: "Goto", icon: <GiTeleport size={14} />, command: "/goto", action: "reportmenu:nuicb:goto" },
+    { id: 2, name: "Bring", icon: <FaPeoplePulling size={14} />, command: "/bring", action: "reportmenu:nuicb:bring" },
+    { id: 3, name: "Revive", icon: <TbMedicalCrossFilled size={14} />, command: "/revive", action: "reportmenu:nuicb:revive" },
+    { id: 4, name: "Spectate", icon: <TbBinoculars size={14} />, command: "/spectate", action: "reportmenu:nuicb:spectate" },
+    { id: 5, name: "Inventory", icon: <TbBackpack size={14} />, command: "/pinv", action: "reportmenu:nuicb:inventory" },
+    { id: 6, name: "Stash", icon: <TbPackages size={14} />, command: "/stash", action: "reportmenu:nuicb:stash" },
+    { id: 7, name: "Fix vehicle", icon: <MdOutlineCarRepair size={14} />, command: "/fix", action: "reportmenu:nuicb:fix" },
+    { id: 8, name: "Clothing", icon: <TbJacket size={14} />, command: "/clothing", action: "reportmenu:nuicb:clothing" },
+    { id: 9, name: "Outfits", icon: <TbJacket size={14} />, command: "/outfits", action: "reportmenu:nuicb:outfits" },
+    { id: 10, name: "Barber", icon: <IoCutSharp size={14} />, command: "/outfits", action: "reportmenu:nuicb:outfits" },
+    { id: 11, name: "Register", icon: <TbSettingsStar size={14} />, command: "/register", action: "reportmenu:nuicb:register" },
+    { id: 12, name: "Logout", icon: <TbLogout size={14} />, command: "/logout", action: "reportmenu:nuicb:logout" },
+]
 const Reports: React.FC<Props> = ({ reports, myReports }) => {
     const [currReport, setCurrReport] = useState<Report>(initStateCurrReport);
     const [modalActive, setModalActive] = useState(false);
@@ -161,20 +181,89 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                 <div className="flex flex-col gap-1 justify-center p-2 rounded">
                     <div className="flex m-2 font-main text-white">
                         <p>{currReport.title}</p>
-                        <div className="ml-auto flex  gap-2 justify-center items-center">
+                        <div className="ml-auto flex gap-2 justify-center items-center">
                             <p className="bg-background rounded-[2px] p-1 text-sm">
                                 {currReport.reportId}
                             </p>
                             <p className="bg-background rounded-[2px] p-1 text-sm">
                                 {currReport.type}
                             </p>
+                            <Menu shadow="md" width={200}>
+                                <Menu.Target>
+                                    <Button>
+                                        <TbDots />
+                                    </Button>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    {!myReports && (
+                                        <>
+                                            <Menu.Label>Player Zone</Menu.Label>
+                                            {adminActions.map((action) => (
+                                                <Menu.Item
+                                                    key={action.id}
+                                                    leftSection={action.icon}
+                                                    rightSection={
+                                                        <Text size="xs" c="dimmed">
+                                                            {action.command}
+                                                        </Text>
+                                                    }
+                                                    onClick={() => {
+                                                        fetchNui(action.action, currReport);
+                                                        setCurrReport(initStateCurrReport);
+                                                        setModalActive(false);
+                                                    }}
+                                                >{action.name}</Menu.Item>
+                                            ))}
+                                            <Menu.Divider />
+                                        </>
+                                    )}
+                                    <Menu.Label>Report zone</Menu.Label>
+                                    <Menu.Item
+                                        leftSection={<IoIosSend size={14} />}
+                                        onClick={() => {
+                                            // setCurrReport(initStateCurrReport);
+                                            setMessageModalOpen(true);
+                                            // setModalActive(false);
+                                        }}>
+                                        Send Message
+                                    </Menu.Item>
+                                    <Menu.Item
+                                        leftSection={<FaCheck size={14} />}
+                                        onClick={() => {
+                                            const data = {
+                                                ...currReport,
+                                                isMyReportsPage: myReports,
+                                            };
+
+                                            fetchNui("reportmenu:nuicb:delete", data);
+                                            setModalActive(false);
+                                            setCurrReport(initStateCurrReport);
+                                        }}>
+                                        {myReports ? "Close" : "Conclude"} Report
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
                         </div>
                     </div>
                     <div className="rounded py-1 px-2 flex flex-col gap-2 justify-center">
-                        <p className="text-white font-main">Player Name</p>
-                        {currReport.playerName}
-                        <p className="text-white font-main">
-                            Report Description
+                        <div className="flex gap-2 items-center">
+                            <p className="text-white font-main flex gap-2 items-center"><TbUser />  Player Name:</p>
+                            <p className="font-main">{currReport.playerName}</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <p className="text-white font-main flex gap-2 items-center"><TbId /> Player ID:</p>
+                            <p className="font-main">{currReport.playerId}</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <p className="text-white font-main flex gap-2 items-center"> <TbBrandDiscord /> Player Discord:</p>
+                            <p className="font-main">{currReport.playerDiscord}</p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <p className="text-white font-main flex gap-2 items-center"> <TbBrandDiscord /> Player License:</p>
+                            <p className="font-main">{currReport.playerLicense}</p>
+                        </div>
+                        <p className="text-white font-main flex gap-2 items-center">
+                            <TbFileDescription /> Report Description
                         </p>
                         {currReport.description}
 
@@ -259,64 +348,6 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                             </>
                         )}
                     </div>
-                </div>
-                <div className="flex justify-end items-center mt-4 gap-2 font-main">
-                    <Button
-                        className="text-xs rounded-[2px] m-0 border-[2px] bg-secondary"
-                        onClick={() => {
-                            // setCurrReport(initStateCurrReport);
-                            setMessageModalOpen(true);
-                            // setModalActive(false);
-                        }}
-                    >
-                        <IoIosSend size={16} className="mr-1" /> Send Message
-                    </Button>
-                    {!myReports && (
-                        <>
-                            <Button
-                                className="text-xs rounded-[2px] m-0 border-[2px] bg-secondary"
-                                onClick={() => {
-                                    fetchNui(
-                                        "reportmenu:nuicb:goto",
-                                        currReport
-                                    );
-                                    setCurrReport(initStateCurrReport);
-                                    setModalActive(false);
-                                }}
-                            >
-                                <GiTeleport className="mr-1" /> Goto
-                            </Button>
-                            <Button
-                                className="text-xs rounded-[2px] m-0 border-[2px] bg-secondary"
-                                onClick={() => {
-                                    fetchNui(
-                                        "reportmenu:nuicb:bring",
-                                        currReport
-                                    );
-                                    setCurrReport(initStateCurrReport);
-                                    setModalActive(false);
-                                }}
-                            >
-                                <FaPeoplePulling className="mr-1" /> Bring
-                            </Button>
-                        </>
-                    )}
-                    <Button
-                        className="text-xs rounded-[2px] m-0 border-[2px] text-white"
-                        onClick={() => {
-                            const data = {
-                                ...currReport,
-                                isMyReportsPage: myReports,
-                            };
-
-                            fetchNui("reportmenu:nuicb:delete", data);
-                            setModalActive(false);
-                            setCurrReport(initStateCurrReport);
-                        }}
-                    >
-                        <FaCheck size={16} strokeWidth={2.5} className="mr-1" />
-                        {myReports ? "Close" : "Conclude"} Report
-                    </Button>
                 </div>
             </Modal>
             <Modal
