@@ -9,7 +9,7 @@ import { MdOutlineCarRepair, MdOutlineSocialDistance } from "react-icons/md";
 import "./App.css";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLogout, TbMedicalCrossFilled, TbPackages, TbSettingsStar, TbUser } from "react-icons/tb";
+import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLicense, TbLogout, TbMedicalCrossFilled, TbPackages, TbSettingsStar, TbUser } from "react-icons/tb";
 import { IoCutSharp } from "react-icons/io5";
 
 const types = ["Bug", "Question", "Gameplay"];
@@ -259,7 +259,7 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                             <p className="font-main">{currReport.playerDiscord}</p>
                         </div>
                         <div className="flex gap-2 items-center">
-                            <p className="text-white font-main flex gap-2 items-center"> <TbBrandDiscord /> Player License:</p>
+                            <p className="text-white font-main flex gap-2 items-center"> <TbLicense /> Player License:</p>
                             <p className="font-main">{currReport.playerLicense}</p>
                         </div>
                         <p className="text-white font-main flex gap-2 items-center">
