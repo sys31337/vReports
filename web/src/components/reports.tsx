@@ -9,7 +9,7 @@ import { MdOutlineCarRepair, MdOutlineSocialDistance } from "react-icons/md";
 import "./App.css";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLicense, TbLogout, TbMedicalCrossFilled, TbPackages, TbSettingsStar, TbUser } from "react-icons/tb";
+import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLicense, TbLogout, TbMedicalCrossFilled, TbPackages, TbRibbonHealth, TbSettingsStar, TbSkull, TbUser } from "react-icons/tb";
 import { IoCutSharp } from "react-icons/io5";
 
 const types = ["Bug", "Question", "Gameplay"];
@@ -89,15 +89,17 @@ const adminActions = [
     { id: 1, name: "Goto", icon: <GiTeleport size={14} />, command: "/goto", action: "reportmenu:nuicb:goto" },
     { id: 2, name: "Bring", icon: <FaPeoplePulling size={14} />, command: "/bring", action: "reportmenu:nuicb:bring" },
     { id: 3, name: "Revive", icon: <TbMedicalCrossFilled size={14} />, command: "/revive", action: "reportmenu:nuicb:revive" },
-    { id: 4, name: "Spectate", icon: <TbBinoculars size={14} />, command: "/spectate", action: "reportmenu:nuicb:spectate" },
-    { id: 5, name: "Inventory", icon: <TbBackpack size={14} />, command: "/pinv", action: "reportmenu:nuicb:inventory" },
-    { id: 6, name: "Stash", icon: <TbPackages size={14} />, command: "/stash", action: "reportmenu:nuicb:stash" },
-    { id: 7, name: "Fix vehicle", icon: <MdOutlineCarRepair size={14} />, command: "/fix", action: "reportmenu:nuicb:fix" },
-    { id: 8, name: "Clothing", icon: <TbJacket size={14} />, command: "/clothing", action: "reportmenu:nuicb:clothing" },
-    { id: 9, name: "Outfits", icon: <TbJacket size={14} />, command: "/outfits", action: "reportmenu:nuicb:outfits" },
-    { id: 10, name: "Barber", icon: <IoCutSharp size={14} />, command: "/outfits", action: "reportmenu:nuicb:outfits" },
-    { id: 11, name: "Register", icon: <TbSettingsStar size={14} />, command: "/register", action: "reportmenu:nuicb:register" },
-    { id: 12, name: "Logout", icon: <TbLogout size={14} />, command: "/logout", action: "reportmenu:nuicb:logout" },
+    { id: 4, name: "Heal", icon: <TbRibbonHealth size={14} />, command: "/heal", action: "reportmenu:nuicb:heal" },
+    { id: 5, name: "Kill", icon: <TbSkull size={14} />, command: "/kill", action: "reportmenu:nuicb:kill" },
+    { id: 6, name: "Spectate", icon: <TbBinoculars size={14} />, command: "/spectate", action: "reportmenu:nuicb:spectate" },
+    { id: 7, name: "Inventory", icon: <TbBackpack size={14} />, command: "/pinv", action: "reportmenu:nuicb:inventory" },
+    { id: 8, name: "Stash", icon: <TbPackages size={14} />, command: "/stash", action: "reportmenu:nuicb:stash" },
+    { id: 9, name: "Fix vehicle", icon: <MdOutlineCarRepair size={14} />, command: "/fix", action: "reportmenu:nuicb:fix" },
+    { id: 10, name: "Clothing", icon: <TbJacket size={14} />, command: "/clothingmenu", action: "reportmenu:nuicb:clothing" },
+    { id: 11, name: "Outfits", icon: <TbJacket size={14} />, command: "/outfits", action: "reportmenu:nuicb:outfits" },
+    { id: 12, name: "Barber", icon: <IoCutSharp size={14} />, command: "/barber", action: "reportmenu:nuicb:barber" },
+    { id: 13, name: "Register", icon: <TbSettingsStar size={14} />, command: "/register", action: "reportmenu:nuicb:register" },
+    { id: 14, name: "Logout", icon: <TbLogout size={14} />, command: "/logout", action: "reportmenu:nuicb:logout" },
 ]
 const Reports: React.FC<Props> = ({ reports, myReports }) => {
     const [currReport, setCurrReport] = useState<Report>(initStateCurrReport);
@@ -260,7 +262,7 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                         </div>
                         <div className="flex gap-2 items-center">
                             <p className="text-white font-main flex gap-2 items-center"> <TbLicense /> Player License:</p>
-                            <p className="font-main">{currReport.playerLicense}</p>
+                            <p className="font-main">{currReport.playerLicense?.replace('license:', '')}</p>
                         </div>
                         <p className="text-white font-main flex gap-2 items-center">
                             <TbFileDescription /> Report Description
