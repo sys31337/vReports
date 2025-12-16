@@ -73,17 +73,73 @@ end)
 
 RegisterNuiCallback("reportmenu:nuicb:goto", function(data, cb)
     if not data then return Debug("[reportmenu:nuicb:goto] first param is null.") end
-
     TriggerServerEvent("reportmenu:server:goto", data)
-
     cb({})
 end)
 
 RegisterNuiCallback("reportmenu:nuicb:bring", function(data, cb)
-    if not data then return Debug("[reportmenu:nuicb:goto] first param is null.") end
-
+    if not data then return Debug("[reportmenu:nuicb:bring] first param is null.") end
     TriggerServerEvent("reportmenu:server:bring", data)
+    cb({})
+end)
 
+RegisterNuiCallback("reportmenu:nuicb:revive", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:revive] first param is null.") end
+    TriggerServerEvent("reportmenu:server:revive", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:spectate", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:spectate] first param is null.") end
+    TriggerServerEvent("reportmenu:server:spectate", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:inventory", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:inventory] first param is null.") end
+    TriggerServerEvent("reportmenu:server:inventory", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:stash", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:stash] first param is null.") end
+    TriggerServerEvent("reportmenu:server:stash", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:fix", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:fix] first param is null.") end
+    TriggerServerEvent("reportmenu:server:fix", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:clothing", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:clothing] first param is null.") end
+    TriggerServerEvent("reportmenu:server:clothing", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:outfits", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:outfits] first param is null.") end
+    TriggerServerEvent("reportmenu:server:outfits", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:barber", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:barber] first param is null.") end
+    TriggerServerEvent("reportmenu:server:barber", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:register", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:register] first param is null.") end
+    TriggerServerEvent("reportmenu:server:register", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:logout", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:logout] first param is null.") end
+    TriggerServerEvent("reportmenu:server:logout", data)
     cb({})
 end)
 

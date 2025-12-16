@@ -1,7 +1,6 @@
-import { Divider, SegmentedControl, Transition } from "@mantine/core";
+import { Divider, SegmentedControl, Switch, Transition } from "@mantine/core";
 import React, { useEffect, useState, useCallback } from "react";
 import { FaShieldCat } from "react-icons/fa6";
-import { IoSettingsSharp } from "react-icons/io5";
 import { MdBugReport } from "react-icons/md";
 import { TbMessageReportFilled } from "react-icons/tb";
 import { Toaster, toast } from "sonner";
@@ -13,16 +12,9 @@ import { isEnvBrowser } from "../utils/misc";
 import "./App.css";
 import ReportModal from "./reportModal";
 import Reports, { Report } from "./reports";
-import { Button } from "./ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 import { Input } from "./ui/input";
+import TopLogo from "./TopLogo";
+import { Bell, BellOff } from "lucide-react";
 
 debugData([
     {
@@ -85,9 +77,7 @@ export interface ScriptConfig {
 const App: React.FC = () => {
     const [visible, setVisible] = useState(false);
     const [playerData, setPlayerData] = useState<playerData>(initialPlayerData);
-    const [currentTab, setCurrentTab] = useState(
-        playerData.isStaff ? "reports" : "myreports"
-    );
+    const [currentTab, setCurrentTab] = useState(playerData.isStaff ? "reports" : "myreports");
     const [reportMenuVisible, setReportMenuVisible] = useState(isEnvBrowser());
     const [reportData, setReportData] = useState<reportData>(initialReportData);
     const [activeReports, setActiveReports] = useState<Report[]>([]);
@@ -107,37 +97,33 @@ const App: React.FC = () => {
         NotificationPos: "top-center",
     });
 
-    const [userSettings, setUserSettings] = useState<UserSettings>({
-        notifications: true,
-    });
-
+    const [userSettings, setUserSettings] = useState<UserSettings>({ notifications: true });
     const [loading, setLoading] = useState(false);
 
-    // Debounced search function
     const debouncedSearch = useCallback(
         debounce((query: string) => {
             const filterPlayers = (data: Report[], query: string) => {
                 return data
                     ? Object.values(data).filter((report) => {
-                          if (!report) return;
-                          const lowerQuery = query.toLowerCase();
-                          const reportPlayerId = report.id
-                              ?.toString()
-                              .toLowerCase();
-                          const reportPlayerName =
-                              report.playerName.toLowerCase();
-                          const reportTitle = report.title.toLowerCase();
-                          const reportTimeDate = report.timedate.toLowerCase();
-                          const reportType = report.type.toLowerCase();
+                        if (!report) return;
+                        const lowerQuery = query.toLowerCase();
+                        const reportPlayerId = report.id
+                            ?.toString()
+                            .toLowerCase();
+                        const reportPlayerName =
+                            report.playerName.toLowerCase();
+                        const reportTitle = report.title.toLowerCase();
+                        const reportTimeDate = report.timedate.toLowerCase();
+                        const reportType = report.type.toLowerCase();
 
-                          return (
-                              reportPlayerId.includes(lowerQuery) ||
-                              reportPlayerName.includes(lowerQuery) ||
-                              reportTitle.includes(lowerQuery) ||
-                              reportTimeDate.includes(lowerQuery) ||
-                              reportType.includes(lowerQuery)
-                          );
-                      })
+                        return (
+                            reportPlayerId.includes(lowerQuery) ||
+                            reportPlayerName.includes(lowerQuery) ||
+                            reportTitle.includes(lowerQuery) ||
+                            reportTimeDate.includes(lowerQuery) ||
+                            reportType.includes(lowerQuery)
+                        );
+                    })
                     : [];
             };
 
@@ -164,7 +150,6 @@ const App: React.FC = () => {
     useNuiEvent("nui:state:settings", setUserSettings);
     useNuiEvent("nui:state:scriptconfig", setScriptConfig);
     useNuiEvent("nui:resetstates", () => {
-        // Only search query for now.
         setSearchQuery("");
     });
     useNuiEvent<boolean>("setVisible", setVisible);
@@ -205,95 +190,61 @@ const App: React.FC = () => {
                     <>
                         <div className="flex w-[100dvw] h-[100dvh] justify-center items-center">
                             <div
-                                className="min-w-[50dvw] min-h-[35dvw] bg-background rounded-[2px]"
+                                className="min-w-[50dvw] min-h-[35dvw] relative m-auto overflow-hidden bg-gray-900 bg-[url(images/background.webp)] bg-cover bg-blend-hard-light opacity-100 transition-all duration-300 rounded-2xl"
                                 style={styles}
                             >
-                                <div className="flex items-center">
-                                    <h1 className="m-2 gap-[5px] relative flex justify-center bg-secondary items-center rounded px-4 py-1 font-main text-white border-[2px]">
-                                        <FaShieldCat
-                                            size={18}
-                                            className="text-primary mb-[1px]"
-                                        />
-                                        Report Menu
+                                <div className="absolute -z-10 inset-0 overflow-hidden">
+                                    <div className="absolute z-0 top-0 left-0 w-full h-full bg-gradient-to-br from-green-900/30 to-emerald-900/30"></div>
+                                    <div className="absolute z-0 top-1/4 left-1/4 w-64 h-64 rounded-full bg-green-500/10 blur-3xl animate-pulse"></div>
+                                    <div className="absolute z-0 bottom-1/3 right-1/4 w-72 h-72 rounded-full bg-emerald-500/10 blur-3xl animate-pulse delay-300"></div>
+                                    <div className="absolute z-0 top-1/3 right-1/3 w-48 h-48 rounded-full bg-green-500/10 blur-2xl animate-pulse delay-700"></div>
+                                    <div className="absolute z-0 inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                                </div>
+                                <div className="flex items-center justify-between z-50 pe-6">
+                                    <h1 className="m-2 gap-[5px] relative flex justify-center bg-black/80 items-center rounded-lg font-main text-white p-5 py-2">
+                                        <FaShieldCat size={18} className="text-primary mb-[1px]" />
+                                        <TopLogo />
                                     </h1>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button className="border-[2px] ml-auto rounded bg-secondary text-white mr-1">
-                                                <IoSettingsSharp
-                                                    size={13}
-                                                    strokeWidth={2.25}
-                                                />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="bg-background font-main">
-                                            <DropdownMenuLabel className="text-center">
-                                                Settings
-                                            </DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuCheckboxItem
-                                                checked={
-                                                    userSettings.notifications
-                                                }
-                                                onCheckedChange={(checked) => {
-                                                    setUserSettings({
-                                                        notifications: checked,
-                                                    });
-                                                    const settings = {
-                                                        notifications: checked,
-                                                    };
-                                                    setUserSettings(settings);
-                                                    fetchNui(
-                                                        "reportmenu:nui:cb:settings",
-                                                        settings
-                                                    );
-                                                }}
-                                            >
-                                                Notifications
-                                            </DropdownMenuCheckboxItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <Switch
+                                        size="lg"
+                                        color="var(--mantine-color-green-6)"
+                                        onLabel={<Bell size={16} color="var(--mantine-color-white)" />}
+                                        offLabel={<BellOff size={16} color="var(--mantine-color-green-6)" />}
+                                        checked={userSettings.notifications}
+                                        onChange={(e) => {
+                                            setUserSettings({ notifications: e.target.checked });
+                                            const settings = { notifications: e.target.checked };
+                                            setUserSettings(settings);
+                                            fetchNui("reportmenu:nui:cb:settings", settings);
+                                        }} />
                                 </div>
 
                                 <Divider size="xs" />
 
                                 <div className="flex relative items-center justify-center m-5">
                                     <SegmentedControl
-                                        className="border-[2px] bg-secondary"
+                                        className="backdrop-filter backdrop-blur-xl bg-black/20 rounded-3xl"
                                         value={currentTab}
-                                        onChange={(e) => {
-                                            setCurrentTab(e);
-                                        }}
-                                        classNames={{
-                                            label: "mb-1 mr-1",
-                                        }}
+                                        onChange={setCurrentTab}
+                                        classNames={{ indicator: "bg-black/80 rounded-full", label: "font-medium" }}
                                         data={[
                                             {
                                                 value: "reports",
                                                 disabled: !playerData.isStaff,
                                                 label: (
-                                                    <>
-                                                        <div className="flex justify-center items-center gap-1 text-white">
-                                                            <TbMessageReportFilled
-                                                                size={18}
-                                                                className="text-primary mt-[3px]"
-                                                            />
-                                                            Reports
-                                                        </div>
-                                                    </>
+                                                    <div className="flex justify-center items-center gap-1 text-white">
+                                                        <TbMessageReportFilled size={18} className="text-primary mt-[3px]" />
+                                                        Reports
+                                                    </div>
                                                 ),
                                             },
                                             {
                                                 value: "myreports",
                                                 label: (
-                                                    <>
-                                                        <div className="flex justify-center items-center gap-1 text-white">
-                                                            <MdBugReport
-                                                                size={18}
-                                                                className="text-primary mt-[3px]"
-                                                            />
-                                                            My Reports
-                                                        </div>
-                                                    </>
+                                                    <div className="flex justify-center items-center gap-1 text-white">
+                                                        <MdBugReport size={18} className="text-primary mt-[3px]" />
+                                                        My Reports
+                                                    </div>
                                                 ),
                                             },
                                         ]}
@@ -301,11 +252,9 @@ const App: React.FC = () => {
                                     <div className="absolute right-0 top-0 h-full flex items-center justify-center">
                                         <Input
                                             type="text"
-                                            className="outline-none w-full font-main h-[70%] text-sm border border-secondary-foreground] bg-secondary ml-auto py-[5px] px-[5px] rounded-[8px] focus:border-blue-400 transition-all focus:!ring-1"
+                                            className="outline-none w-full font-main text-sm border border-secondary-foreground] bg-black/20 hover:bg-black/30 hover: ml-auto p-5 px-4 rounded-xl transition-all focus:ring-0 focus:border-0"
                                             placeholder="Search..."
-                                            onChange={(e) => {
-                                                setSearchQuery(e.target.value);
-                                            }}
+                                            onChange={(e) => { setSearchQuery(e.target.value) }}
                                         />
                                     </div>
                                 </div>
@@ -331,9 +280,6 @@ const App: React.FC = () => {
                                         />
                                     )}
                                 </div>
-                                <p className="font-main flex justify-end m-2">
-                                    v1.1.2
-                                </p>
                             </div>
                         </div>
                     </>

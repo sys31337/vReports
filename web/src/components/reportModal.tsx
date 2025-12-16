@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { fetchNui } from "@/utils/fetchNui";
 import * as React from "react";
 import { FaShieldCat } from "react-icons/fa6";
@@ -35,7 +30,7 @@ const ReportModal: React.FC = ({
                 setReportMenuVisible(state);
             }}
         >
-            <DialogContent className="bg-[#1a1a1a] border-[2px] rounded-[8px]">
+            <DialogContent className="backdrop-filter backdrop-blur-xl bg-black/20 shadow-md rounded-2xl">
                 <DialogHeader>
                     <DialogTitle className="font-main mb-2 text-lg flex justify-center items-center gap-[5px]">
                         <FaShieldCat
@@ -58,7 +53,7 @@ const ReportModal: React.FC = ({
                         <div className="grid grid-cols-2 mt-2 gap-4">
                             <Input
                                 type="text"
-                                className="outline-none text-sm font-main w-full h-full border-[2px] bg-background ml-auto py-2 rounded transition-all"
+                                className="text-sm font-main w-full h-full backdrop-filter backdrop-blur-xl rounded-xl bg-black/20 focus-within:ring-0 focus-within:border-0 ml-auto py-2 transition-all"
                                 placeholder="Title"
                                 onChange={(value) => {
                                     const data = {
@@ -78,21 +73,20 @@ const ReportModal: React.FC = ({
 
                             <Input
                                 type="text"
-                                className="outline-none col-span-2 font-main w-full h-full border-[2px] bg-background ml-auto p-2 rounded transition-all"
+                                className="text-sm col-span-2 font-main w-full h-full backdrop-filter backdrop-blur-xl rounded-xl bg-black/20 focus-within:ring-0 focus-within:border-0 ml-auto py-2 transition-all"
                                 placeholder="Description..."
                                 onChange={(value) => {
                                     const data = {
                                         ...reportData,
                                         description: value.target.value,
                                     };
-
                                     setReportData(data);
                                 }}
                                 required
                             />
 
                             <div className="w-full h-full flex col-span-2 items-center justify-center">
-                                <div className="items-center flex space-x-3 border w-full p-[6px] rounded-[8px] hover:cursor-pointer hover:border-primary transition-all z-20">
+                                <div className="items-center flex space-x-3 border w-full ps-3 py-2 rounded-[8px] hover:cursor-pointer hover:border-primary transition-all z-20">
                                     <Checkbox
                                         id="checkbox1"
                                         checked={
@@ -125,7 +119,7 @@ const ReportModal: React.FC = ({
                             </div>
 
                             <Button
-                                className="text-sm gap-1 font-bold font-geist rounded-[2px] m-0 border-[2px] col-span-2"
+                                className="text-sm gap-1 font-bold font-geist m-0 bg-emerald-600 hover:bg-transparent hover:border-[2px] hover:text-white col-span-2"
                                 type="submit"
                             >
                                 Submit Report

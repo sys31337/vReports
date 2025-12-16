@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 ---@diagnostic disable: need-check-nil
 
 ---@param data ActiveReport
@@ -13,7 +15,14 @@ RegisterNetEvent("reportmenu:server:report", function(data)
     local reportId = tostring(rchar .. rint_num)
     local sourceName = GetPlayerName(source)
 
+    local Player = QBCore.Functions.GetPlayer(source)
+    local playerDiscord = QBCore.Functions.GetIdentifier(source, "discord")
+    local playerLicense = QBCore.Functions.GetIdentifier(source, "license")
     data.id = source
+    data.playerId = source .. " (" .. (Player.PlayerData.citizenid) .. ")" .. " - " .. Player.PlayerData.charinfo.firstname .. " " ..
+        Player.PlayerData.charinfo.lastname
+    data.playerDiscord = playerDiscord
+    data.playerLicense = playerLicense
     data.timedate = ("%s | %s"):format(os.date("%X"), os.date("%x"))
     data.reportId = reportId
     Debug(json.encode(data))
@@ -137,9 +146,7 @@ end)
 
 RegisterNetEvent("reportmenu:server:goto", function(data)
     if not OnlineStaff[tonumber(source)] then
-        return Debug(
-            ("[netEvent:reportmenu:server:goto] %s (ID -%s) Isn't a staff member but somehow called the event.")
-            :format(GetPlayerName(source), source))
+        return Debug(("[netEvent:reportmenu:server:goto] %s (ID -%s) Isn't a staff member but somehow called the event."):format(GetPlayerName(source), source))
     end
 
     local targetPed = GetPlayerPed(data.id)
@@ -195,6 +202,54 @@ RegisterNetEvent("reportmenu:server:bring", function(data)
         GetPlayerRoutingBucket(data.id))
 
     SetEntityCoords(targetPed, srcPedCoords.x, srcPedCoords.y, srcPedCoords.z, true, false, false, false)
+end)
+
+RegisterNetEvent("reportmenu:server:revive", function(data)
+    if not OnlineStaff[tonumber(source)] then return Debug(("[netEvent:reportmenu:server:revive] %s (ID -%s) Isn't a staff member but somehow called the event."):format(GetPlayerName(source), source)) end
+    local targetPed = GetPlayerPed(data.id)
+    if not targetPed then return ShowNotification({ title = "Error Encountered", description = "Couldn't get the Target Ped", target = source }) end
+    TriggerClientEvent('brutal_ambulancejob:revive', data.id)
+end)
+
+RegisterNetEvent("reportmenu:server:heal", function(data)
+    if not OnlineStaff[tonumber(source)] then return Debug(("[netEvent:reportmenu:server:heal] %s (ID -%s) Isn't a staff member but somehow called the event."):format(GetPlayerName(source), source)) end
+    local targetPed = GetPlayerPed(data.id)
+    if not targetPed then return ShowNotification({ title = "Error Encountered", description = "Couldn't get the Target Ped", target = source }) end
+    TriggerClientEvent('brutal_ambulancejob:heal', data.id)
+end)
+
+RegisterNetEvent("reportmenu:server:kill", function(data)
+    if not OnlineStaff[tonumber(source)] then return Debug(("[netEvent:reportmenu:server:kill] %s (ID -%s) Isn't a staff member but somehow called the event."):format(GetPlayerName(source), source)) end
+    local targetPed = GetPlayerPed(data.id)
+    if not targetPed then return ShowNotification({ title = "Error Encountered", description = "Couldn't get the Target Ped", target = source }) end
+    TriggerClientEvent('brutal_ambulancejob:kill', data.id)
+end)
+
+RegisterNetEvent("reportmenu:server:spectate", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:inventory", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:stash", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:fix", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:clothing", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:outfits", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:barber", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:register", function(data)
+end)
+
+RegisterNetEvent("reportmenu:server:logout", function(data)
 end)
 
 RegisterNetEvent("reportmenu:server:sendmessage", function(data)
