@@ -1,4 +1,4 @@
-import { Modal, ScrollArea, Menu, Text } from "@mantine/core";
+import { Modal, ScrollArea, Menu, Text, Accordion } from "@mantine/core";
 import React, { useState } from "react";
 import { FaCheck, FaPeoplePulling, } from "react-icons/fa6";
 import { GiTeleport } from "react-icons/gi";
@@ -104,9 +104,11 @@ const adminActions = [
 const Reports: React.FC<Props> = ({ reports, myReports }) => {
     const [currReport, setCurrReport] = useState<Report>(initStateCurrReport);
     const [modalActive, setModalActive] = useState(false);
-    const [messageModal, setMessageModalOpen] = useState(false);
     const [messageQuery, setMessageQuery] = useState("");
-
+    const openReport = (report: Report) => {
+        setCurrReport(report);
+        setModalActive(true);
+    }
     debugData([
         {
             action: "nui:state:reports",
@@ -116,52 +118,42 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
 
     return (
         <>
-            <ScrollArea className="w-full h-full">
-                <div className="grid grid-cols-1 m-5 sm:grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <ScrollArea className="w-full h-full backdrop-filter backdrop-blur-xl bg-black/10 rounded-xl">
+                <div className="grid grid-cols-1 m-5 sm:grid-cols-2 gap-4 md:grid-cols-3">
                     {reports.length !== 0 ? (
                         <>
                             {Object.values(reports).map((report, index) => {
-                                if (!report)
-                                    return console.log(
-                                        "[DEBUG] (Reports/map) report is null"
-                                    );
+                                if (!report) return console.log("[DEBUG] (Reports/map) report is null");
                                 return (
-                                    <>
-                                        <div
-                                            key={index}
-                                            onClick={() => {
-                                                setCurrReport(report);
-                                                setModalActive(true);
-                                            }}
-                                            className="flex hover:cursor-pointer transition-all select-none hover:-translate-y-1 flex-col py-1 px-2  bg-secondary border-[2px] border-secondary-foreground rounded text-white"
-                                        >
-                                            <p className="flex items-center">
-                                                <span className="truncate max-w-[100px] text-sm">
-                                                    {report.title}
-                                                </span>
-                                                <span className="ml-auto bg-background px-1 font-main text-sm">
-                                                    {report.type}
-                                                </span>
+                                    <div
+                                        key={index}
+                                        onClick={() => openReport(report)}
+                                        className="flex hover:cursor-pointer transition-all select-none flex-col p-2 h-20 justify-between hover:scale-105 backdrop-filter backdrop-blur-xl bg-black/20 rounded-xl text-white"
+                                    >
+                                        <p className="flex items-center">
+                                            <span className="truncate max-w-[100px] text-sm">
+                                                {report.title}
+                                            </span>
+                                            <span className="ml-auto bg-black/20 font-main rounded-full px-3 font-thin text-xs py-1 backdrop-filter backdrop-blur-xl">
+                                                {report.type}
+                                            </span>
+                                        </p>
+                                        <div className="flex items-center mt-2">
+                                            <p className="text-xs rounded-[2px] text-white bg-background text-opacity-50 backdrop-filter backdrop-blur-xl">
+                                                {report.reportId}
                                             </p>
-                                            <div className="flex items-center mt-2">
-                                                <p className="text-xs rounded-[2px] text-white bg-background text-opacity-50">
-                                                    {report.reportId}
-                                                </p>
-                                                <p className="ml-auto rounded-[2px] bg-background px-2 font-main text-xs opacity-50">
-                                                    {report.timedate}
-                                                </p>
-                                            </div>
+                                            <p className="ml-auto rounded-[2px] bg-background px-2 font-main text-xs opacity-50 backdrop-filter backdrop-blur-xl">
+                                                {report.timedate}
+                                            </p>
                                         </div>
-                                    </>
+                                    </div>
                                 );
                             })}
                         </>
                     ) : (
                         <>
                             <div className="font-main">
-                                {myReports
-                                    ? "You have no active reports."
-                                    : "No Reports available."}
+                                {myReports ? "You have no active reports." : "No Reports available."}
                             </div>
                         </>
                     )}
@@ -175,24 +167,18 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                     setModalActive(false);
                     setCurrReport(initStateCurrReport);
                 }}
-                classNames={{
-                    body: "border-[2px] bg-secondary",
-                }}
+                classNames={{ content: "bg-black/80 rounded-2xl", }}
                 withCloseButton={false}
             >
-                <div className="flex flex-col gap-1 justify-center p-2 rounded">
+                <div className="flex flex-col gap-1 justify-center rounded-2xl backdrop-filter backdrop-blur-xl bg-black/20">
                     <div className="flex m-2 font-main text-white">
                         <p>{currReport.title}</p>
                         <div className="ml-auto flex gap-2 justify-center items-center">
-                            <p className="bg-background rounded-[2px] p-1 text-sm">
-                                {currReport.reportId}
-                            </p>
-                            <p className="bg-background rounded-[2px] p-1 text-sm">
-                                {currReport.type}
-                            </p>
+                            <p className="backdrop-filter backdrop-blur-xl bg-red-800/20 rounded-lg p-1 px-3 text-sm">{currReport.reportId}</p>
+                            <p className="backdrop-filter backdrop-blur-xl bg-red-500/20 rounded-lg p-1 px-3 text-sm">{currReport.type}</p>
                             <Menu shadow="md" width={200}>
                                 <Menu.Target>
-                                    <Button>
+                                    <Button className="bg-black/0 rounded-2xl outline-none focus-within:outline-none">
                                         <TbDots />
                                     </Button>
                                 </Menu.Target>
@@ -204,11 +190,7 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                                 <Menu.Item
                                                     key={action.id}
                                                     leftSection={action.icon}
-                                                    rightSection={
-                                                        <Text size="xs" c="dimmed">
-                                                            {action.command}
-                                                        </Text>
-                                                    }
+                                                    rightSection={<Text size="xs" c="dimmed">{action.command}</Text>}
                                                     onClick={() => {
                                                         fetchNui(action.action, currReport);
                                                         setCurrReport(initStateCurrReport);
@@ -216,33 +198,8 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                                     }}
                                                 >{action.name}</Menu.Item>
                                             ))}
-                                            <Menu.Divider />
                                         </>
                                     )}
-                                    <Menu.Label>Report zone</Menu.Label>
-                                    <Menu.Item
-                                        leftSection={<IoIosSend size={14} />}
-                                        onClick={() => {
-                                            // setCurrReport(initStateCurrReport);
-                                            setMessageModalOpen(true);
-                                            // setModalActive(false);
-                                        }}>
-                                        Send Message
-                                    </Menu.Item>
-                                    <Menu.Item
-                                        leftSection={<FaCheck size={14} />}
-                                        onClick={() => {
-                                            const data = {
-                                                ...currReport,
-                                                isMyReportsPage: myReports,
-                                            };
-
-                                            fetchNui("reportmenu:nuicb:delete", data);
-                                            setModalActive(false);
-                                            setCurrReport(initStateCurrReport);
-                                        }}>
-                                        {myReports ? "Close" : "Conclude"} Report
-                                    </Menu.Item>
                                 </Menu.Dropdown>
                             </Menu>
                         </div>
@@ -312,7 +269,7 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                             </>
                         )}
 
-                        {currReport.nearestPlayers && (
+                        {!!currReport.nearestPlayers && currReport.nearestPlayers?.length > 0 && (
                             <>
                                 <p className="text-white font-main">
                                     Nearest Players
@@ -349,54 +306,60 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                 </ScrollArea>
                             </>
                         )}
-                    </div>
-                </div>
-            </Modal>
-            <Modal
-                opened={messageModal}
-                withCloseButton={false}
-                onClose={() => {
-                    setMessageModalOpen(false);
-                }}
-                centered
-                classNames={{
-                    body: "bg-secondary border-[2px]",
-                }}
-            >
-                <div className="font-main">
-                    <p className="mb-1">Send a message</p>
-                    <form
-                        className="flex items-center gap-1"
-                        onSubmit={(e) => {
-                            e.preventDefault();
+                        <Accordion className="mt-2" variant="separated">
+                            <Accordion.Item value="reply">
+                                <Accordion.Control className="outline-none focus:outline-none " icon={<IoIosSend />}>Reply</Accordion.Control>
+                                <Accordion.Panel>
+                                    <form
+                                        className="flex items-center gap-1"
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
 
-                            const data = {
-                                report: currReport,
-                                messageQuery: messageQuery,
-                            };
+                                            const data = {
+                                                report: currReport,
+                                                messageQuery: messageQuery,
+                                            };
 
-                            fetchNui("reportmenu:nuicb:sendmessage", data);
-                            setMessageModalOpen(false);
-                            setModalActive(false);
-                            setCurrReport(initStateCurrReport);
-                            setMessageQuery("");
-                        }}
-                    >
-                        <Input
-                            className="w-full focus:!ring-1"
-                            value={messageQuery}
-                            onChange={(e) => {
-                                setMessageQuery(e.target.value);
-                            }}
-                            placeholder="Message..."
-                        />
+                                            fetchNui("reportmenu:nuicb:sendmessage", data);
+                                            setModalActive(false);
+                                            setCurrReport(initStateCurrReport);
+                                            setMessageQuery("");
+                                        }}
+                                    >
+                                        <Input
+                                            className="w-full focus:!ring-1"
+                                            value={messageQuery}
+                                            onChange={(e) => {
+                                                setMessageQuery(e.target.value);
+                                            }}
+                                            placeholder="Message..."
+                                        />
+                                        <Button
+                                            type="submit"
+                                            className="border-[2px] p-4 rounded-[2px] bg-background h-[36px] text-white"
+                                        >
+                                            <FaCheck size={16} strokeWidth={2.5} />
+                                        </Button>
+                                    </form>
+                                </Accordion.Panel>
+                            </Accordion.Item>
+                        </Accordion>
                         <Button
-                            type="submit"
-                            className="border-[2px] p-4 rounded-[2px] bg-background h-[36px] text-white"
-                        >
-                            <FaCheck size={16} strokeWidth={2.5} />
+                            className="flex gap-2"
+                            onClick={() => {
+                                const data = {
+                                    ...currReport,
+                                    isMyReportsPage: myReports,
+                                };
+
+                                fetchNui("reportmenu:nuicb:delete", data);
+                                setModalActive(false);
+                                setCurrReport(initStateCurrReport);
+                            }}>
+                            <FaCheck size={14} />
+                            {myReports ? "Close" : "Conclude"} Report
                         </Button>
-                    </form>
+                    </div>
                 </div>
             </Modal>
         </>

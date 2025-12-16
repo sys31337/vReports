@@ -33,7 +33,7 @@ export default {
         ring: "hsl(var(--ring))",
         background: "#1e1e1e",
         foreground: "hsl(var(--foreground))",
-        primary: "#a079ff",
+        primary: "#0bdc89",
         secondary: {
           DEFAULT: "#262626",
           foreground: "#363636",

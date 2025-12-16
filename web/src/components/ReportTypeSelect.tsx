@@ -31,7 +31,7 @@ export function ReportTypeSelect({
                 setReportData({ ...reportData, type: typedValue });
             }}
             placeholder="Report Type"
-            buttonClassName="bg-background border-[2px] w-full transition-all font-main text-white"
+            buttonClassName="backdrop-filter backdrop-blur-xl bg-black/20 shadow-md rounded-2xl w-full transition-all font-main text-white"
             inputPlaceholder="Search Report Type..."
         />
     );
