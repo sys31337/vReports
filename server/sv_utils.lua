@@ -65,16 +65,6 @@ ShowNotification = function(data)
     TriggerClientEvent("UIMessage", data.target, "nui:notify", data)
 end
 
-GetDiscordID = function(source)
-    local returnValue = nil
-    for idIndex = 1, GetNumPlayerIdentifiers(source) do
-        if GetPlayerIdentifier(source, idIndex) ~= nil and GetPlayerIdentifier(source, idIndex):sub(1, #("discord:")) == "discord:" then
-            returnValue = GetPlayerIdentifier(source, idIndex):gsub("discord:", "")
-        end
-    end
-    return returnValue
-end
-
 ---@param source any
 ---@return string
 GetLicenseIdentifier = function(source)

@@ -65,7 +65,7 @@ type ToasterProps = React.ComponentProps<typeof Toaster>;
 
 export interface ScriptConfig {
     Debug: boolean;
-    UseDiscordRestAPI: boolean;
+    UseDiscordRoles: boolean;
     AcePerm: string;
     MaxDistance: number;
     RoleIDs: Record<string, boolean>;
@@ -86,7 +86,7 @@ const App: React.FC = () => {
     const [myReports, setMyReports] = useState<Report[]>([]);
     const [scriptConfig, setScriptConfig] = useState<ScriptConfig>({
         Debug: true,
-        UseDiscordRestAPI: true,
+        UseDiscordRoles: true,
         AcePerm: "vadmin.staff",
         MaxDistance: 20.0,
         RoleIDs: {

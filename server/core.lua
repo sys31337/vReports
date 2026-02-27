@@ -29,6 +29,17 @@ end)
 
 SetTimeout(1000, function()
     Debug("[Thread:LoopPlayerList] beginning.")
+
+    if Config.UseDiscordRoles then
+        local ok = pcall(function()
+            exports['sys-discord']:EnsureDiscordGuildCache()
+        end)
+
+        if not ok then
+            Debug("[Thread:LoopPlayerList] Failed to warm sys-discord cache.")
+        end
+    end
+
     CreateThread(function()
         local Players = GetPlayers()
         for i = 1, #Players do

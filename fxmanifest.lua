@@ -7,6 +7,7 @@ use_experimental_fxv2_oal "yes"
 author 'vipex [Discord: vipex.v]'
 description 'Advanced Free and Standalone Report Menu for FiveM'
 ui_page 'web/dist/index.html'
+dependency 'sys-discord'
 
 shared_scripts {
 	"config.lua",
@@ -25,7 +26,6 @@ client_scripts {
 
 server_scripts {
 	"sv_config.lua",
-	"server/modules/**/*",
 	"server/classes/**/*",
 	"server/sv_utils.lua",
 	"server/Classes/**/*",
