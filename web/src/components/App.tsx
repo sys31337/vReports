@@ -105,6 +105,7 @@ const App: React.FC = () => {
     const [reportMenuVisible, setReportMenuVisible] = useState(isEnvBrowser());
     const [reportData, setReportData] = useState<reportData>(initialReportData);
     const [activeReports, setActiveReports] = useState<Report[]>([]);
+    const [devInjected, setDevInjected] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [myReports, setMyReports] = useState<Report[]>([]);
     const [scriptConfig, setScriptConfig] = useState<ScriptConfig>({
@@ -180,6 +181,37 @@ const App: React.FC = () => {
 
         setActiveReports(normalizeReports(reports as Report[] | Record<string, Report>));
     });
+
+    // inject dummy data when running in browser for development previews
+    useEffect(() => {
+        if (!devInjected && isEnvBrowser()) {
+            setDevInjected(true);
+            const sample: Report = {
+                id: 1,
+                playerName: "DevTester",
+                playerId: "123",
+                playerLicense: "license:ABC123",
+                playerDiscord: "dev#0001",
+                type: "Gameplay",
+                description: "This is a sample report shown in dev mode. It contains all properties for debugging UI.",
+                timedate: new Date().toLocaleString(),
+                title: "",
+                messages: [
+                    { playerName: "StaffOne", playerId: "2", data: "Checking into issue.", timedate: new Date().toLocaleString() },
+                    { playerName: "DevTester", playerId: "123", data: "Thanks, let me know.", timedate: new Date().toLocaleString() }
+                ],
+                nearestPlayers: [
+                    { id: 45, name: "NearbyPlayer", distance: 4 },
+                    { id: 78, name: "SecondPlayer", distance: 11 }
+                ],
+                reportId: "D1",
+                viewers: [{ id: 2, name: "StaffOne" }],
+                seenBy: [{ id: 2, name: "StaffOne" }, { id: 3, name: "StaffTwo" }],
+            };
+            setActiveReports([sample]);
+            setMyReports([sample]);
+        }
+    }, [devInjected]);
     useNuiEvent("nui:state:settings", setUserSettings);
     useNuiEvent<ScriptConfig & ThemeData>("nui:state:scriptconfig", (data) => {
         if (data?.accentColor) {
@@ -238,7 +270,7 @@ const App: React.FC = () => {
                     <>
                         <div className="flex w-[100dvw] h-[100dvh] justify-center items-center">
                             <div
-                                className="min-w-[50dvw] min-h-[35dvw] relative m-auto overflow-hidden bg-gray-900 bg-[url(images/background.webp)] bg-cover bg-blend-hard-light opacity-100 transition-all duration-300 rounded-2xl"
+                                className="min-w-[50dvw] min-h-[35dvw] relative m-auto overflow-hidden bg-gray-900 bg-cover bg-blend-hard-light opacity-100 transition-all duration-300 rounded-2xl"
                                 style={styles}
                             >
                                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -271,7 +303,7 @@ const App: React.FC = () => {
 
                                 <div className="flex relative items-center justify-center m-5">
                                     <SegmentedControl
-                                        className="backdrop-filter backdrop-blur-xl bg-black/20 rounded-3xl"
+                                        className="bg-black/20 rounded-3xl"
                                         value={currentTab}
                                         onChange={setCurrentTab}
                                         classNames={{

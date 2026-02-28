@@ -30,7 +30,7 @@ const ReportModal: React.FC = ({
                 setReportMenuVisible(state);
             }}
         >
-            <DialogContent className="backdrop-filter backdrop-blur-xl bg-black/20 shadow-md rounded-2xl">
+            <DialogContent className="bg-black/20 shadow-md rounded-2xl">
                 <DialogHeader>
                     <DialogTitle className="font-main mb-2 text-lg flex justify-center items-center gap-[5px]">
                         <FaShieldCat
@@ -53,7 +53,7 @@ const ReportModal: React.FC = ({
                         <div className="grid grid-cols-2 mt-2 gap-4">
                             <Input
                                 type="text"
-                                className="text-sm font-main w-full h-full backdrop-filter backdrop-blur-xl rounded-xl bg-black/20 focus-within:ring-0 focus-within:border-0 ml-auto py-2 transition-all"
+                                className="text-sm font-main w-full h-full  rounded-xl bg-black/20 focus-within:ring-0 focus-within:border-0 ml-auto py-2 transition-all"
                                 placeholder="Title"
                                 onChange={(value) => {
                                     const data = {
@@ -73,7 +73,7 @@ const ReportModal: React.FC = ({
 
                             <Input
                                 type="text"
-                                className="text-sm col-span-2 font-main w-full h-full backdrop-filter backdrop-blur-xl rounded-xl bg-black/20 focus-within:ring-0 focus-within:border-0 ml-auto py-2 transition-all"
+                                className="text-sm col-span-2 font-main w-full h-full  rounded-xl bg-black/20 focus-within:ring-0 focus-within:border-0 ml-auto py-2 transition-all"
                                 placeholder="Description..."
                                 onChange={(value) => {
                                     const data = {

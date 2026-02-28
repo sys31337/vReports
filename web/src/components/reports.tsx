@@ -1,15 +1,16 @@
-import { Modal, ScrollArea, Menu, Text, Accordion } from "@mantine/core";
 import React, { useState } from "react";
 import { FaCheck, FaPeoplePulling, FaEye } from "react-icons/fa6";
 import { GiTeleport } from "react-icons/gi";
 import { fetchNui } from "@/utils/fetchNui";
-import { IoIosSend } from "react-icons/io";
 import { MdOutlineCarRepair, MdOutlineSocialDistance } from "react-icons/md";
 import "./App.css";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLicense, TbLogout, TbMedicalCrossFilled, TbPackages, TbRibbonHealth, TbSettingsStar, TbSkull, TbUser } from "react-icons/tb";
+import { Dialog, DialogContent } from "./ui/dialog";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from "./ui/dropdown-menu";
+import { TbBackpack, TbBinoculars, TbBrandDiscord, TbClipboard, TbClipboardCopy, TbDots, TbId, TbJacket, TbLicense, TbLogout, TbMedicalCrossFilled, TbPackages, TbRibbonHealth, TbSettingsStar, TbSkull, TbUser } from "react-icons/tb";
 import { IoCutSharp } from "react-icons/io5";
+import { cn } from "@/lib/utils";
 
 export interface message {
     playerName: string;
@@ -100,7 +101,7 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
 
     return (
         <>
-            <ScrollArea className="w-full h-full backdrop-filter backdrop-blur-xl bg-black/10 rounded-xl">
+            <div className="w-full h-full overflow-auto bg-black/10 rounded-xl">
                 <div className="grid grid-cols-1 m-5 sm:grid-cols-2 gap-4 md:grid-cols-3">
                     {reports.length !== 0 ? (
                         <>
@@ -110,36 +111,30 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                     <div
                                         key={report.reportId}
                                         onClick={() => openReport(report)}
-                                        className="relative flex hover:cursor-pointer transition-all select-none flex-col p-2 h-20 justify-between hover:scale-105 backdrop-filter backdrop-blur-xl bg-black/20 hover:bg-[rgba(var(--accent-rgb),0.12)] border border-transparent hover:border-[rgba(var(--accent-rgb),0.45)] rounded-xl text-white"
+                                        className="cursor-pointer group flex flex-col justify-between p-4 h-24 bg-background border border-secondary rounded-lg hover:bg-secondary/50 transition"
                                     >
                                         {report.seenBy && report.seenBy.length > 0 && (
                                             <FaEye className="absolute top-2 right-2 text-green-400" />
                                         )}
-                                        <p className="flex items-center">
-                                            <span className="truncate max-w-[100px] text-sm">
-                                                {report.title}
-                                            </span>
-                                            <span className="ml-auto bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] font-main rounded-full px-3 font-thin text-xs py-1 backdrop-filter backdrop-blur-xl">
-                                                {report.type}
-                                            </span>
-                                        </p>
-                                        {report.viewers && report.viewers.length > 0 && (
-                                            <p className="text-xs text-green-400">
-                                                Viewing: {report.viewers.length}
-                                            </p>
-                                        )}
-                                        <div className="flex items-center mt-2">
-                                            <div className="flex items-center gap-2 min-w-0">
-                                                <p className="text-xs rounded-[2px] text-white bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] px-2 py-[2px] backdrop-filter backdrop-blur-xl">
-                                                    {report.reportId}
-                                                </p>
-                                                <p className="text-xs text-white/70 truncate max-w-[100px]">
-                                                    {report.playerName}
-                                                </p>
+                                        <div className="flex items-center">
+                                            <div className="flex gap-1 items-center">
+                                                <span className="text-xs rounded-lg text-white bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] px-2 py-[2px]">{report.reportId}</span>
+                                                <span className="font-semibold truncate">
+                                                    {report.title || "(no title)"}
+                                                </span>
                                             </div>
-                                            <p className="ml-auto rounded-[2px] bg-background px-2 font-main text-xs opacity-50 backdrop-filter backdrop-blur-xl">
-                                                {report.timedate}
-                                            </p>
+                                            <span className="ml-auto text-xs px-2 py-0.5 rounded bg-accent text-accent-foreground">
+                                                {report.type || "Unknown"}
+                                            </span>
+                                        </div>
+                                        {report.viewers && report.viewers.length > 0 && (
+                                            <div className="text-xs text-green-400">
+                                                Viewing: {report.viewers.length}
+                                            </div>
+                                        )}
+                                        <div className="flex items-center text-xs text-muted-foreground mt-1">
+                                            <span className="mx-1 truncate flex-1">{report.playerName}</span>
+                                            <span className="opacity-60">{report.timedate}</span>
                                         </div>
                                     </div>
                                 );
@@ -153,228 +148,224 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                         </>
                     )}
                 </div>
-            </ScrollArea>
-            <Modal
-                opened={modalActive}
-                centered
-                size={"lg"}
-                onClose={() => {
-                    // inform server we are no longer viewing
-                    if (currReport?.reportId) {
+            </div>
+            <Dialog
+                open={modalActive}
+                onOpenChange={(state) => {
+                    if (!state && currReport?.reportId) {
                         fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
                     }
-                    setModalActive(false);
-                    setCurrReport(initStateCurrReport);
+                    setModalActive(state);
+                    if (!state) setCurrReport(initStateCurrReport);
                 }}
-                classNames={{ content: "bg-black/80 rounded-2xl", }}
-                withCloseButton={false}
             >
-                <div className="flex flex-col gap-1 justify-center rounded-2xl backdrop-filter backdrop-blur-xl bg-black/20">
-                    <div className="flex m-2 font-main text-white">
-                        <p>{currReport.title}</p>
-                        <div className="ml-auto flex gap-2 justify-center items-center">
-                            <p className="backdrop-filter backdrop-blur-xl bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] rounded-lg p-1 px-3 text-sm">{currReport.reportId}</p>
-                            <p className="backdrop-filter backdrop-blur-xl bg-[rgba(var(--accent-rgb),0.18)] border border-[rgba(var(--accent-rgb),0.45)] rounded-lg p-1 px-3 text-sm">{currReport.type}</p>
-                            <Menu shadow="md" width={200}>
-                                <Menu.Target>
-                                    <Button className="bg-black/0 rounded-2xl outline-none focus-within:outline-none">
-                                        <TbDots />
-                                    </Button>
-                                </Menu.Target>
-                                <Menu.Dropdown>
-                                    {!myReports && (
-                                        <>
-                                            <Menu.Label>Player Zone</Menu.Label>
-                                            {adminActions.map((action) => (
-                                                <Menu.Item
-                                                    key={action.id}
-                                                    leftSection={action.icon}
-                                                    rightSection={<Text size="xs" c="dimmed">{action.command}</Text>}
-                                                    onClick={() => {
-                                                        fetchNui(action.action, currReport);
-                                                        setCurrReport(initStateCurrReport);
-                                                        setModalActive(false);
-                                                    }}
-                                                >{action.name}</Menu.Item>
-                                            ))}
-                                        </>
-                                    )}
-                                </Menu.Dropdown>
-                            </Menu>
-                        </div>
-                    </div>
-                    <div className="rounded py-1 px-2 flex flex-col gap-2 justify-center">
-                        <div className="flex gap-2 items-center">
-                            <p className="text-white font-main flex gap-2 items-center"><TbUser />  Player Name:</p>
-                            <p className="font-main">{currReport.playerName}</p>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            <p className="text-white font-main flex gap-2 items-center"><TbId /> Player ID:</p>
-                            <p className="font-main">{currReport.playerId}</p>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            <p className="text-white font-main flex gap-2 items-center"> <TbBrandDiscord /> Player Discord:</p>
-                            <p className="font-main">{currReport.playerDiscord}</p>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            <p className="text-white font-main flex gap-2 items-center"> <TbLicense /> Player License:</p>
-                            <p className="font-main">{currReport.playerLicense?.replace('license:', '')}</p>
-                        </div>
-                        <p className="text-white font-main flex gap-2 items-center">
-                            <TbFileDescription /> Report Description
-                        </p>
-                        {currReport.description}
-
-                        {currReport.viewers && currReport.viewers.length > 0 && (
-                            <p className="text-white font-main mt-1">
-                                <span className="font-bold">Currently viewing:</span> {currReport.viewers.map(v => v.name).join(", ")}
-                            </p>
-                        )}
-                        {currReport.seenBy && currReport.seenBy.length > 0 && (
-                            <p className="text-white font-main text-xs opacity-70">
-                                <span className="font-bold">Seen by:</span> {currReport.seenBy.map(v => v.name).join(", ")}
-                            </p>
-                        )}
-
-                        {currReport.messages && (
-                            <>
-                                <p className="text-white font-main">
-                                    Report Messages
-                                </p>
-                                <ScrollArea className="h-[20dvh] bg-background border-[2px]">
-                                    <div className="flex flex-col gap-2">
-                                        {currReport.messages.map(
-                                            (message, index) => (
-                                                <div
-                                                    key={`${message.playerId}-${message.timedate}-${index}`}
-                                                    className="bg-secondary py-1 px-2 m-2 rounded-[2px] border-[2px]"
-                                                >
-                                                    <div className="flex items-center justify-center font-main">
-                                                        <span className="text-white">
-                                                            {
-                                                                message.playerName
-                                                            }{" "}
-                                                            (ID -{" "}
-                                                            {
-                                                                message.playerId
-                                                            }
-                                                            ):
-                                                        </span>
-                                                        <span className="ml-1 max-w-[240px] break-words">
-                                                            {message.data}
-                                                        </span>
-                                                        <p className="ml-auto bg-background px-2 py-1 flex justify-center items-center gap-1 border-[2px] font-main opacity-50 text-xs">
-                                                            {
-                                                                message.timedate
-                                                            }
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                </ScrollArea>
-                            </>
-                        )}
-
-                        {!!currReport.nearestPlayers && currReport.nearestPlayers?.length > 0 && (
-                            <>
-                                <p className="text-white font-main">
-                                    Nearest Players
-                                </p>
-                                <ScrollArea className="max-h-[30dvh] bg-background border-[2px]">
-                                    <div className=" py-4 px-4 rounded-[2px] gap-2 grid grid-cols-4 font-mwwwwwwwwwwwain text-sm">
-                                        {currReport.nearestPlayers.length > 0 &&
-                                            currReport.nearestPlayers.map(
-                                                (player, index) => (
-                                                    <div
-                                                        key={`${player.id}-${index}`}
-                                                        className="bg-secondary py-1 px-2 flex items-center"
+                <DialogContent className="bg-black/80 rounded-2xl">
+                    <div className="flex flex-col gap-1 justify-center rounded-2xl  bg-black/20">
+                        <div className="flex m-2 font-main text-white">
+                            <p>{currReport.title}</p>
+                            <div className="ml-auto flex gap-2 justify-center items-center">
+                                <p className="bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] rounded-lg p-1 px-3 text-sm">{currReport.reportId}</p>
+                                <p className="bg-[rgba(var(--accent-rgb),0.18)] border border-[rgba(var(--accent-rgb),0.45)] rounded-lg p-1 px-3 text-sm">{currReport.type}</p>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button className="bg-black/0 rounded-2xl outline-none focus-within:outline-none">
+                                            <TbDots />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" side="bottom" className="bg-background">
+                                        {!myReports && (
+                                            <>
+                                                <DropdownMenuLabel>Player Zone</DropdownMenuLabel>
+                                                {adminActions.map((action) => (
+                                                    <DropdownMenuItem
+                                                        key={action.id}
+                                                        onClick={() => {
+                                                            fetchNui(action.action, currReport);
+                                                            setCurrReport(initStateCurrReport);
+                                                            setModalActive(false);
+                                                        }}
                                                     >
-                                                        <div className="p-1 flex items-center text-white">
-                                                            [{player.id}]{" "}
-                                                            <p className="ml-1 truncate max-w-[50px]">
-                                                                {
-                                                                    player.name
-                                                                }
+                                                        <div className="flex items-center gap-2">
+                                                            {action.icon}
+                                                            <span>{action.name}</span>
+                                                            <span className="ml-auto text-xs opacity-60">{action.command}</span>
+                                                        </div>
+                                                    </DropdownMenuItem>
+                                                ))}
+                                            </>
+                                        )}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        </div>
+                        <div className="rounded py-1 px-2 flex flex-col gap-2 justify-center">
+                            <div className="flex gap-2 items-center justify-between">
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-white text-xs font-main flex gap-2 items-center"><TbUser />  Player Name:</p>
+                                    <p className="font-main text-xs">{currReport.playerName}</p>
+                                </div>
+                                <TbClipboardCopy />
+                            </div>
+                            <div className="flex gap-2 items-center justify-between">
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-white text-xs font-main flex gap-2 items-center"><TbId /> Player ID:</p>
+                                    <p className="font-main text-xs">{currReport.playerId}</p>
+                                </div>
+                                <TbClipboardCopy />
+                            </div>
+                            <div className="flex gap-2 items-center justify-between">
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-white text-xs font-main flex gap-2 items-center"> <TbBrandDiscord /> Player Discord:</p>
+                                    <p className="font-main text-xs">{currReport.playerDiscord}</p>
+                                </div>
+                                <TbClipboardCopy />
+                            </div>
+                            <div className="flex gap-2 items-center justify-between">
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-white text-xs font-main flex gap-2 items-center"> <TbLicense /> Player License:</p>
+                                    <p className="font-main text-xs">{currReport.playerLicense?.replace('license:', '')}</p>
+                                </div>
+                                <TbClipboardCopy />
+                            </div>
+                            <div className="border p-2 rounded-lg text-sm px-2">
+                                <p className="text-xs rounded-lg w-fit mb-2 text-white bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] px-2 py-[2px]">Message</p>
+                                <div className="ps-2 pb-2">
+                                    {currReport.description}
+                                </div>
+                            </div>
+
+                            {currReport.viewers && currReport.viewers.length > 0 && (
+                                <p className="text-white font-main mt-1">
+                                    <span className="font-bold">Currently viewing:</span> {currReport.viewers.map(v => v.name).join(", ")}
+                                </p>
+                            )}
+                            {currReport.seenBy && currReport.seenBy.length > 0 && (
+                                <p className="text-white font-main text-xs opacity-70">
+                                    <span className="font-bold">Seen by:</span> {currReport.seenBy.map(v => v.name).join(", ")}
+                                </p>
+                            )}
+
+                            {currReport.messages && (
+                                <>
+                                    <p className="text-white font-main">
+                                        Report Messages
+                                    </p>
+                                    <div className="h-[20dvh] overflow-auto bg-background border-[2px]">
+                                        <div className="flex flex-col">
+                                            {currReport.messages.map(
+                                                (message, index) => (
+                                                    <div
+                                                        key={`${message.playerId}-${message.timedate}-${index}`}
+                                                        className={cn(
+                                                            "bg-secondary py-1 px-2 m-0.5 rounded-[2px]",
+                                                            message.playerId === currReport.playerId ? 'bg-white/10' : 'bg-emerald-950'
+                                                        )}
+                                                    >
+                                                        <div className="flex flex-col font-main">
+                                                            <div className="flex justify-between items-center">
+                                                                <p className="text-white text-xs">
+                                                                    [{String(message.playerId).padStart(4, '0')}] - {message.playerName}:
+                                                                </p>
+                                                                <p className="ml-auto bg-background px-2 flex justify-center items-center gap-1 border-[2px] font-main opacity-50 text-xs">
+                                                                    {message.timedate}
+                                                                </p>
+                                                            </div>
+                                                            <p className="ml-1 max-w-[240px] break-words text-xs">
+                                                                {message.data}
                                                             </p>
                                                         </div>
-                                                        <p className="ml-auto flex items-center bg-background rounded-[2px] px-1">
-                                                            <MdOutlineSocialDistance className="mr-1" />{" "}
-                                                            {
-                                                                player.distance
-                                                            }
-                                                        </p>
                                                     </div>
                                                 )
                                             )}
+                                        </div>
                                     </div>
-                                </ScrollArea>
-                            </>
-                        )}
-                        <Accordion className="mt-2" variant="separated">
-                            <Accordion.Item value="reply">
-                                <Accordion.Control className="outline-none focus:outline-none " icon={<IoIosSend />}>Reply</Accordion.Control>
-                                <Accordion.Panel>
-                                    <form
-                                        className="flex items-center gap-1"
-                                        onSubmit={(e) => {
-                                            e.preventDefault();
+                                </>
+                            )}
 
-                                            const data = {
-                                                report: currReport,
-                                                messageQuery: messageQuery,
-                                            };
+                            {!!currReport.nearestPlayers && currReport.nearestPlayers?.length > 0 && (
+                                <>
+                                    <p className="text-white font-main">
+                                        Nearest Players
+                                    </p>
+                                    <div className="max-h-[30dvh] overflow-auto bg-background border-[2px]">
+                                        <div className="py-4 px-4 rounded-[2px] flex gap-1 font-mwwwwwwwwwwwain text-sm">
+                                            {currReport.nearestPlayers.length > 0 &&
+                                                currReport.nearestPlayers.map(
+                                                    (player, index) => (
+                                                        <div
+                                                            key={`${player.id}-${index}`}
+                                                            className="bg-secondary py-1 px-2 flex items-center gap-2"
+                                                        >
+                                                            <div className="flex items-center text-white text-xs">
+                                                                <p className="ml-1">{player.id} - {player.name}</p>
+                                                            </div>
+                                                            <p className="ml-auto flex items-center bg-background rounded-[2px] px-1">
+                                                                <MdOutlineSocialDistance className="mr-1" />{" "}
+                                                                {player.distance}
+                                                            </p>
+                                                        </div>
+                                                    )
+                                                )}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                            <form
+                                className="flex items-center gap-1 mt-2"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
 
-                                            fetchNui("reportmenu:nuicb:sendmessage", data);
-                                            // closing modal, remove from viewers
-                                            if (currReport?.reportId) {
-                                                fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
-                                            }
-                                            setModalActive(false);
-                                            setCurrReport(initStateCurrReport);
-                                            setMessageQuery("");
-                                        }}
-                                    >
-                                        <Input
-                                            className="w-full focus:!ring-1"
-                                            value={messageQuery}
-                                            onChange={(e) => {
-                                                setMessageQuery(e.target.value);
-                                            }}
-                                            placeholder="Message..."
-                                        />
-                                        <Button
-                                            type="submit"
-                                            className="border-[2px] p-4 rounded-[2px] bg-background h-[36px] text-white"
-                                        >
-                                            <FaCheck size={16} strokeWidth={2.5} />
-                                        </Button>
-                                    </form>
-                                </Accordion.Panel>
-                            </Accordion.Item>
-                        </Accordion>
-                        <Button
-                            className="flex gap-2"
-                            onClick={() => {
-                                const data = {
-                                    ...currReport,
-                                    isMyReportsPage: myReports,
-                                };
+                                    const data = {
+                                        report: currReport,
+                                        messageQuery: messageQuery,
+                                    };
 
-                                fetchNui("reportmenu:nuicb:delete", data);
-                                if (currReport?.reportId) {
-                                    fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
-                                }
-                                setModalActive(false);
-                                setCurrReport(initStateCurrReport);
-                            }}>
-                            <FaCheck size={14} />
-                            {myReports ? "Close" : "Conclude"} Report
-                        </Button>
+                                    fetchNui("reportmenu:nuicb:sendmessage", data);
+                                    if (currReport?.reportId) {
+                                        fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
+                                    }
+                                    setModalActive(false);
+                                    setCurrReport(initStateCurrReport);
+                                    setMessageQuery("");
+                                }}
+                            >
+                                <Input
+                                    className="w-full"
+                                    value={messageQuery}
+                                    onChange={(e) => {
+                                        setMessageQuery(e.target.value);
+                                    }}
+                                    placeholder="Message..."
+                                />
+                                <Button
+                                    type="submit"
+                                    className="border-[2px] p-4 rounded-[2px] bg-background h-[36px] text-white"
+                                >
+                                    <FaCheck size={16} strokeWidth={2.5} />
+                                </Button>
+                            </form>
+                            <Button
+                                className="flex gap-2"
+                                onClick={() => {
+                                    const data = {
+                                        ...currReport,
+                                        isMyReportsPage: myReports,
+                                    };
+
+                                    fetchNui("reportmenu:nuicb:delete", data);
+                                    if (currReport?.reportId) {
+                                        fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
+                                    }
+                                    setModalActive(false);
+                                    setCurrReport(initStateCurrReport);
+                                }}>
+                                <FaCheck size={14} />
+                                {myReports ? "Close" : "Conclude"} Report
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </Modal>
+                </DialogContent>
+            </Dialog>
         </>
     );
 };

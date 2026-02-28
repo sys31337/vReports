@@ -42,7 +42,7 @@ export function Combobox({
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger
                 asChild
-                className=" flex items-center justify-between"
+                className="flex items-center justify-between"
             >
                 <Button
                     variant="outline"
