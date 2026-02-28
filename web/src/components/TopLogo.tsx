@@ -1,7 +1,11 @@
 import React from 'react'
 
-const TopLogo = () => (
-  <p>DL Roleplay</p>
+interface TopLogoProps {
+  title: string;
+}
+
+const TopLogo = ({ title }: TopLogoProps) => (
+  <p>{title}</p>
 )
 
 export default TopLogo

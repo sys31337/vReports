@@ -1,5 +1,5 @@
 RegisterCommand(Config.ReportCommand, function()
-    UIMessage("nui:state:reportmenu", true)
+    UIMessage("nui:state:reportmenu", { visible = true })
     SetNuiFocus(true, true)
 end, false)
 

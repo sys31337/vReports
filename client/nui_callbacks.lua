@@ -89,6 +89,18 @@ RegisterNuiCallback("reportmenu:nuicb:revive", function(data, cb)
     cb({})
 end)
 
+RegisterNuiCallback("reportmenu:nuicb:heal", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:heal] first param is null.") end
+    TriggerServerEvent("reportmenu:server:heal", data)
+    cb({})
+end)
+
+RegisterNuiCallback("reportmenu:nuicb:kill", function(data, cb)
+    if not data then return Debug("[reportmenu:nuicb:kill] first param is null.") end
+    TriggerServerEvent("reportmenu:server:kill", data)
+    cb({})
+end)
+
 RegisterNuiCallback("reportmenu:nuicb:spectate", function(data, cb)
     if not data then return Debug("[reportmenu:nuicb:spectate] first param is null.") end
     TriggerServerEvent("reportmenu:server:spectate", data)
@@ -149,7 +161,22 @@ RegisterNuiCallback("reportmenu:nuicb:refresh", function(data, cb)
     cb({})
 end)
 
+-- notify server that a staff member opened a report window
+RegisterNuiCallback("reportmenu:nuicb:openreport", function(data, cb)
+    if not data or not data.reportId then return Debug("[reportmenu:nuicb:openreport] missing reportId") end
+    TriggerServerEvent("reportmenu:server:addviewer", data)
+    cb({})
+end)
+
+-- notify server that a staff member closed a report window
+RegisterNuiCallback("reportmenu:nuicb:closereport", function(data, cb)
+    if not data or not data.reportId then return Debug("[reportmenu:nuicb:closereport] missing reportId") end
+    TriggerServerEvent("reportmenu:server:removeviewer", data)
+    cb({})
+end)
+
 RegisterNuiCallback("reportmenu:nuicb:sendmessage", function(data, cb)
     Debug("[reportmenu:nuicb:sendmessage] data: ", json.encode(data))
     TriggerServerEvent("reportmenu:server:sendmessage", data)
+    cb({})
 end)

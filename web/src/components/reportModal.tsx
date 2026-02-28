@@ -119,7 +119,7 @@ const ReportModal: React.FC = ({
                             </div>
 
                             <Button
-                                className="text-sm gap-1 font-bold font-geist m-0 bg-emerald-600 hover:bg-transparent hover:border-[2px] hover:text-white col-span-2"
+                                className="text-sm gap-1 font-bold font-geist m-0 bg-[rgba(var(--accent-rgb),0.22)] border border-[rgba(var(--accent-rgb),0.55)] hover:bg-[rgba(var(--accent-rgb),0.3)] hover:text-white col-span-2"
                                 type="submit"
                             >
                                 Submit Report

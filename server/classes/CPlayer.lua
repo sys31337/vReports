@@ -52,6 +52,7 @@ function CPlayer:new(player)
         local roleIds = GetConfiguredRoleIds()
         if #roleIds > 0 then
             local hasRole = exports['sys-discord']:HasRole(player, roleIds)
+            print(hasRole)
             if hasRole then
                 isStaff = true
                 OnlineStaff[tonumber(player)] = {

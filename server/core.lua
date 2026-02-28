@@ -25,6 +25,22 @@ AddEventHandler("playerDropped", function(reason)
         OnlineStaff[source] = nil
         Debug(("[eventHandler:playerDropped] %s was removed from the OnlineStaff table."):format(GetPlayerName(source)))
     end
+
+    -- ensure we remove the player from any report viewers lists so stale data doesn't linger
+    for id, report in pairs(ActiveReports) do
+        if report.viewers then
+            for i, v in ipairs(report.viewers) do
+                if v.id == source then
+                    table.remove(report.viewers, i)
+                    -- broadcast the change to remaining staff
+                    for _, s in pairs(OnlineStaff) do
+                        TriggerClientEvent("reportmenu:client:update", s.id, ActiveReports)
+                    end
+                    break
+                end
+            end
+        end
+    end
 end)
 
 SetTimeout(1000, function()

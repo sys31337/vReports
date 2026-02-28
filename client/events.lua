@@ -59,3 +59,11 @@ RegisterNetEvent("staffchat:client:removemyreport", function(data)
         Debug("(reportmenu:client:removemyreport) Report deleted on the client sided `MyReports` table.")
     end
 end)
+
+RegisterNetEvent("reportmenu:client:runcommand", function(command)
+    if type(command) ~= "string" or command == "" then
+        return Debug("[reportmenu:client:runcommand] invalid command payload.")
+    end
+
+    ExecuteCommand(command)
+end)

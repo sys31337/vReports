@@ -1,8 +1,7 @@
 import { Modal, ScrollArea, Menu, Text, Accordion } from "@mantine/core";
 import React, { useState } from "react";
-import { FaCheck, FaPeoplePulling, } from "react-icons/fa6";
+import { FaCheck, FaPeoplePulling, FaEye } from "react-icons/fa6";
 import { GiTeleport } from "react-icons/gi";
-import { debugData } from "@/utils/debugData";
 import { fetchNui } from "@/utils/fetchNui";
 import { IoIosSend } from "react-icons/io";
 import { MdOutlineCarRepair, MdOutlineSocialDistance } from "react-icons/md";
@@ -11,32 +10,6 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { TbBackpack, TbBinoculars, TbBrandDiscord, TbDots, TbFileDescription, TbId, TbJacket, TbLicense, TbLogout, TbMedicalCrossFilled, TbPackages, TbRibbonHealth, TbSettingsStar, TbSkull, TbUser } from "react-icons/tb";
 import { IoCutSharp } from "react-icons/io5";
-
-const types = ["Bug", "Question", "Gameplay"];
-
-const getCurrentDateTime = () => {
-    const currentDate = new Date();
-    const hours = currentDate.getHours();
-    const minutes = currentDate.getMinutes();
-
-    const formattedDate = `${currentDate.getMonth() + 1
-        }/${currentDate.getDate()}/${currentDate.getFullYear()}`;
-
-    const formattedTime = `${hours}:${minutes < 10 ? "0" : ""}${minutes}`;
-
-    return `${formattedTime} ${formattedDate}`;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const testReports = Array.from({ length: 100 }, (_, index) => ({
-    id: index,
-    type: types[Math.floor(Math.random() * types.length)],
-    description: "Very Very racist personeeeeeeeeeeeeeeeee!",
-    playerName: `Test: ${index}`,
-    timedate: getCurrentDateTime(),
-    title: `Title ${index}`,
-    nearestPlayers: [],
-}));
 
 export interface message {
     playerName: string;
@@ -64,6 +37,9 @@ export interface Report {
     nearestPlayers?: nearestPlayer[];
     messages: message[];
     reportId: string;
+    // optional tracking for who is currently viewing or has ever seen the report
+    viewers?: { id: string | number; name: string }[];
+    seenBy?: { id: string | number; name: string }[];
 }
 
 const initStateCurrReport: Report = {
@@ -108,13 +84,19 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
     const openReport = (report: Report) => {
         setCurrReport(report);
         setModalActive(true);
+        // notify server that we're viewing this report
+        fetchNui("reportmenu:nuicb:openreport", { reportId: report.reportId });
     }
-    debugData([
-        {
-            action: "nui:state:reports",
-            data: testReports,
-        },
-    ]);
+
+    // keep the displayed report up to date if the parent list changes (real‑time updates)
+    React.useEffect(() => {
+        if (modalActive && currReport.reportId) {
+            const updated = reports.find((r) => r.reportId === currReport.reportId);
+            if (updated) {
+                setCurrReport(updated);
+            }
+        }
+    }, [reports, modalActive, currReport.reportId]);
 
     return (
         <>
@@ -122,26 +104,39 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                 <div className="grid grid-cols-1 m-5 sm:grid-cols-2 gap-4 md:grid-cols-3">
                     {reports.length !== 0 ? (
                         <>
-                            {Object.values(reports).map((report, index) => {
+                            {reports.map((report) => {
                                 if (!report) return console.log("[DEBUG] (Reports/map) report is null");
                                 return (
                                     <div
-                                        key={index}
+                                        key={report.reportId}
                                         onClick={() => openReport(report)}
-                                        className="flex hover:cursor-pointer transition-all select-none flex-col p-2 h-20 justify-between hover:scale-105 backdrop-filter backdrop-blur-xl bg-black/20 rounded-xl text-white"
+                                        className="relative flex hover:cursor-pointer transition-all select-none flex-col p-2 h-20 justify-between hover:scale-105 backdrop-filter backdrop-blur-xl bg-black/20 hover:bg-[rgba(var(--accent-rgb),0.12)] border border-transparent hover:border-[rgba(var(--accent-rgb),0.45)] rounded-xl text-white"
                                     >
+                                        {report.seenBy && report.seenBy.length > 0 && (
+                                            <FaEye className="absolute top-2 right-2 text-green-400" />
+                                        )}
                                         <p className="flex items-center">
                                             <span className="truncate max-w-[100px] text-sm">
                                                 {report.title}
                                             </span>
-                                            <span className="ml-auto bg-black/20 font-main rounded-full px-3 font-thin text-xs py-1 backdrop-filter backdrop-blur-xl">
+                                            <span className="ml-auto bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] font-main rounded-full px-3 font-thin text-xs py-1 backdrop-filter backdrop-blur-xl">
                                                 {report.type}
                                             </span>
                                         </p>
-                                        <div className="flex items-center mt-2">
-                                            <p className="text-xs rounded-[2px] text-white bg-background text-opacity-50 backdrop-filter backdrop-blur-xl">
-                                                {report.reportId}
+                                        {report.viewers && report.viewers.length > 0 && (
+                                            <p className="text-xs text-green-400">
+                                                Viewing: {report.viewers.length}
                                             </p>
+                                        )}
+                                        <div className="flex items-center mt-2">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <p className="text-xs rounded-[2px] text-white bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] px-2 py-[2px] backdrop-filter backdrop-blur-xl">
+                                                    {report.reportId}
+                                                </p>
+                                                <p className="text-xs text-white/70 truncate max-w-[100px]">
+                                                    {report.playerName}
+                                                </p>
+                                            </div>
                                             <p className="ml-auto rounded-[2px] bg-background px-2 font-main text-xs opacity-50 backdrop-filter backdrop-blur-xl">
                                                 {report.timedate}
                                             </p>
@@ -164,6 +159,10 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                 centered
                 size={"lg"}
                 onClose={() => {
+                    // inform server we are no longer viewing
+                    if (currReport?.reportId) {
+                        fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
+                    }
                     setModalActive(false);
                     setCurrReport(initStateCurrReport);
                 }}
@@ -174,8 +173,8 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                     <div className="flex m-2 font-main text-white">
                         <p>{currReport.title}</p>
                         <div className="ml-auto flex gap-2 justify-center items-center">
-                            <p className="backdrop-filter backdrop-blur-xl bg-red-800/20 rounded-lg p-1 px-3 text-sm">{currReport.reportId}</p>
-                            <p className="backdrop-filter backdrop-blur-xl bg-red-500/20 rounded-lg p-1 px-3 text-sm">{currReport.type}</p>
+                            <p className="backdrop-filter backdrop-blur-xl bg-[rgba(var(--accent-rgb),0.12)] border border-[rgba(var(--accent-rgb),0.35)] rounded-lg p-1 px-3 text-sm">{currReport.reportId}</p>
+                            <p className="backdrop-filter backdrop-blur-xl bg-[rgba(var(--accent-rgb),0.18)] border border-[rgba(var(--accent-rgb),0.45)] rounded-lg p-1 px-3 text-sm">{currReport.type}</p>
                             <Menu shadow="md" width={200}>
                                 <Menu.Target>
                                     <Button className="bg-black/0 rounded-2xl outline-none focus-within:outline-none">
@@ -226,6 +225,17 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                         </p>
                         {currReport.description}
 
+                        {currReport.viewers && currReport.viewers.length > 0 && (
+                            <p className="text-white font-main mt-1">
+                                <span className="font-bold">Currently viewing:</span> {currReport.viewers.map(v => v.name).join(", ")}
+                            </p>
+                        )}
+                        {currReport.seenBy && currReport.seenBy.length > 0 && (
+                            <p className="text-white font-main text-xs opacity-70">
+                                <span className="font-bold">Seen by:</span> {currReport.seenBy.map(v => v.name).join(", ")}
+                            </p>
+                        )}
+
                         {currReport.messages && (
                             <>
                                 <p className="text-white font-main">
@@ -235,33 +245,31 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                     <div className="flex flex-col gap-2">
                                         {currReport.messages.map(
                                             (message, index) => (
-                                                <>
-                                                    <div
-                                                        key={index}
-                                                        className="bg-secondary py-1 px-2 m-2 rounded-[2px] border-[2px]"
-                                                    >
-                                                        <div className="flex items-center justify-center font-main">
-                                                            <span className="text-white">
-                                                                {
-                                                                    message.playerName
-                                                                }{" "}
-                                                                (ID -{" "}
-                                                                {
-                                                                    message.playerId
-                                                                }
-                                                                ):
-                                                            </span>
-                                                            <span className="ml-1 max-w-[240px] break-words">
-                                                                {message.data}
-                                                            </span>
-                                                            <p className="ml-auto bg-background px-2 py-1 flex justify-center items-center gap-1 border-[2px] font-main opacity-50 text-xs">
-                                                                {
-                                                                    message.timedate
-                                                                }
-                                                            </p>
-                                                        </div>
+                                                <div
+                                                    key={`${message.playerId}-${message.timedate}-${index}`}
+                                                    className="bg-secondary py-1 px-2 m-2 rounded-[2px] border-[2px]"
+                                                >
+                                                    <div className="flex items-center justify-center font-main">
+                                                        <span className="text-white">
+                                                            {
+                                                                message.playerName
+                                                            }{" "}
+                                                            (ID -{" "}
+                                                            {
+                                                                message.playerId
+                                                            }
+                                                            ):
+                                                        </span>
+                                                        <span className="ml-1 max-w-[240px] break-words">
+                                                            {message.data}
+                                                        </span>
+                                                        <p className="ml-auto bg-background px-2 py-1 flex justify-center items-center gap-1 border-[2px] font-main opacity-50 text-xs">
+                                                            {
+                                                                message.timedate
+                                                            }
+                                                        </p>
                                                     </div>
-                                                </>
+                                                </div>
                                             )
                                         )}
                                     </div>
@@ -279,27 +287,25 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                         {currReport.nearestPlayers.length > 0 &&
                                             currReport.nearestPlayers.map(
                                                 (player, index) => (
-                                                    <>
-                                                        <div
-                                                            key={index}
-                                                            className="bg-secondary py-1 px-2 flex items-center"
-                                                        >
-                                                            <div className="p-1 flex items-center text-white">
-                                                                [{player.id}]{" "}
-                                                                <p className="ml-1 truncate max-w-[50px]">
-                                                                    {
-                                                                        player.name
-                                                                    }
-                                                                </p>
-                                                            </div>
-                                                            <p className="ml-auto flex items-center bg-background rounded-[2px] px-1">
-                                                                <MdOutlineSocialDistance className="mr-1" />{" "}
+                                                    <div
+                                                        key={`${player.id}-${index}`}
+                                                        className="bg-secondary py-1 px-2 flex items-center"
+                                                    >
+                                                        <div className="p-1 flex items-center text-white">
+                                                            [{player.id}]{" "}
+                                                            <p className="ml-1 truncate max-w-[50px]">
                                                                 {
-                                                                    player.distance
+                                                                    player.name
                                                                 }
                                                             </p>
                                                         </div>
-                                                    </>
+                                                        <p className="ml-auto flex items-center bg-background rounded-[2px] px-1">
+                                                            <MdOutlineSocialDistance className="mr-1" />{" "}
+                                                            {
+                                                                player.distance
+                                                            }
+                                                        </p>
+                                                    </div>
                                                 )
                                             )}
                                     </div>
@@ -321,6 +327,10 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                             };
 
                                             fetchNui("reportmenu:nuicb:sendmessage", data);
+                                            // closing modal, remove from viewers
+                                            if (currReport?.reportId) {
+                                                fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
+                                            }
                                             setModalActive(false);
                                             setCurrReport(initStateCurrReport);
                                             setMessageQuery("");
@@ -353,6 +363,9 @@ const Reports: React.FC<Props> = ({ reports, myReports }) => {
                                 };
 
                                 fetchNui("reportmenu:nuicb:delete", data);
+                                if (currReport?.reportId) {
+                                    fetchNui("reportmenu:nuicb:closereport", { reportId: currReport.reportId });
+                                }
                                 setModalActive(false);
                                 setCurrReport(initStateCurrReport);
                             }}>

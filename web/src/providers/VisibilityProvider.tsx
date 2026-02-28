@@ -8,6 +8,7 @@ import React, {
 import { useNuiEvent } from "../hooks/useNuiEvent";
 import { fetchNui } from "../utils/fetchNui";
 import { isEnvBrowser } from "../utils/misc";
+import { applyTheme } from "../utils/utils";
 
 const VisibilityCtx = createContext<VisibilityProviderValue | null>(null);
 
@@ -16,6 +17,11 @@ interface VisibilityProviderValue {
   visible: boolean;
 }
 
+type VisibilityPayload = {
+  visible?: boolean;
+  accentColor?: string;
+};
+
 // This should be mounted at the top level of your application, it is currently set to
 // apply a CSS visibility value. If this is non-performant, this should be customized.
 export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -23,7 +29,17 @@ export const VisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [visible, setVisible] = useState(false);
 
-  useNuiEvent<boolean>("setVisible", setVisible);
+  useNuiEvent<boolean | VisibilityPayload>("setVisible", (payload) => {
+    if (typeof payload === "object" && payload) {
+      if (payload.accentColor) {
+        applyTheme(payload.accentColor);
+      }
+      setVisible(Boolean(payload.visible));
+      return;
+    }
+
+    setVisible(Boolean(payload));
+  });
 
   // Handle pressing escape/backspace
   useEffect(() => {
