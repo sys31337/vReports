@@ -190,7 +190,7 @@ const App: React.FC = () => {
                 id: 1,
                 playerName: "DevTester",
                 playerId: "123",
-                playerLicense: "license:ABC123",
+                playerLicense: "license:ABC123ABC123ABC123ABC123ABC123ABC123ABC123",
                 playerDiscord: "dev#0001",
                 type: "Gameplay",
                 description: "This is a sample report shown in dev mode. It contains all properties for debugging UI.",
@@ -270,16 +270,9 @@ const App: React.FC = () => {
                     <>
                         <div className="flex w-[100dvw] h-[100dvh] justify-center items-center">
                             <div
-                                className="min-w-[50dvw] min-h-[35dvw] relative m-auto overflow-hidden bg-gray-900 bg-cover bg-blend-hard-light opacity-100 transition-all duration-300 rounded-2xl"
+                                className="min-w-[50dvw] min-h-[35dvw] relative m-auto overflow-hidden bg-black/80 bg-cover bg-blend-hard-light opacity-100 transition-all duration-300 rounded-2xl"
                                 style={styles}
                             >
-                                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                    <div className="absolute z-0 top-0 left-0 w-full h-full bg-[linear-gradient(135deg,rgba(var(--accent-rgb),0.28),rgba(var(--accent-rgb),0.08))]"></div>
-                                    <div className="absolute z-0 top-1/4 left-1/4 w-64 h-64 rounded-full bg-[rgba(var(--accent-rgb),0.16)] blur-3xl animate-pulse"></div>
-                                    <div className="absolute z-0 bottom-1/3 right-1/4 w-72 h-72 rounded-full bg-[rgba(var(--accent-rgb),0.12)] blur-3xl animate-pulse delay-300"></div>
-                                    <div className="absolute z-0 top-1/3 right-1/3 w-48 h-48 rounded-full bg-[rgba(var(--accent-rgb),0.14)] blur-2xl animate-pulse delay-700"></div>
-                                    <div className="absolute z-0 inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                                </div>
                                 <div className="flex items-center justify-between z-50 pe-6">
                                     <h1 className="m-2 gap-[5px] relative flex justify-center bg-black/80 items-center rounded-lg font-main text-white p-5 py-2">
                                         <FaShieldCat size={18} className="text-primary mb-[1px]" />

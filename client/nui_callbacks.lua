@@ -5,6 +5,10 @@ RegisterNuiCallback('hideFrame', function(_, cb)
     cb({})
 end)
 
+RegisterNuiCallback("reportmenu:nuicb:copy", function(data, cb)
+    exports['sys-menu']:Copy(data.text)
+end)
+
 RegisterNuiCallback("reportmenu:nuicb:sendreport", function(data, cb)
     if not data then return Debug("[reportmenu:nuicb:sendreport] first param is null.") end
     Debug("[reportmenu:nuicb:sendreport] Data param: ", json.encode(data))

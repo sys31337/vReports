@@ -30,13 +30,10 @@ const ReportModal: React.FC = ({
                 setReportMenuVisible(state);
             }}
         >
-            <DialogContent className="bg-black/20 shadow-md rounded-2xl">
+            <DialogContent className="bg-black/80 shadow-md rounded-2xl">
                 <DialogHeader>
                     <DialogTitle className="font-main mb-2 text-lg flex justify-center items-center gap-[5px]">
-                        <FaShieldCat
-                            size={18}
-                            className="text-primary mb-[1px]"
-                        />
+                        <FaShieldCat  size={18} className="text-primary mb-[1px]"/>
                         Report Menu
                     </DialogTitle>
                 </DialogHeader>
@@ -119,7 +116,7 @@ const ReportModal: React.FC = ({
                             </div>
 
                             <Button
-                                className="text-sm gap-1 font-bold font-geist m-0 bg-[rgba(var(--accent-rgb),0.22)] border border-[rgba(var(--accent-rgb),0.55)] hover:bg-[rgba(var(--accent-rgb),0.3)] hover:text-white col-span-2"
+                                className="text-sm text-white gap-1 font-bold font-geist m-0 bg-[rgba(var(--accent-rgb),0.22)] border border-[rgba(var(--accent-rgb),0.55)] hover:bg-[rgba(var(--accent-rgb),0.3)] hover:text-white col-span-2"
                                 type="submit"
                             >
                                 Submit Report
