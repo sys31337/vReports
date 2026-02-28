@@ -407,9 +407,9 @@ RegisterNetEvent("reportmenu:server:addviewer", function(data)
         TriggerClientEvent("reportmenu:client:update", v.id, ActiveReports)
     end
     -- also update the original reporter so they can see the change
-    if report.id then
-        TriggerClientEvent("reportmenu:client:updateactivereport", report.id, report)
-    end
+    -- if report.id then
+    --     TriggerClientEvent("reportmenu:client:updateactivereport", report.id, report)
+    -- end
 end)
 
 RegisterNetEvent("reportmenu:server:removeviewer", function(data)
@@ -433,7 +433,7 @@ RegisterNetEvent("reportmenu:server:removeviewer", function(data)
         TriggerClientEvent("reportmenu:client:update", v.id, ActiveReports)
     end
     -- notify the player who submitted the report as well
-    if report and report.id then
-        TriggerClientEvent("reportmenu:client:updateactivereport", report.id, report)
-    end
+    -- if report and report.id then
+    --     TriggerClientEvent("reportmenu:client:updateactivereport", report.id, report)
+    -- end
 end)

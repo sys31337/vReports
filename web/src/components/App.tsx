@@ -330,7 +330,7 @@ const App: React.FC = () => {
                                             <Button
                                                 type="button"
                                                 onClick={refreshReports}
-                                                className="h-10 mr-2 px-3"
+                                                className="h-10 mr-2 px-3 text-white"
                                             >
                                                 <RefreshCw size={14} className="mr-1" />
                                                 Refresh
